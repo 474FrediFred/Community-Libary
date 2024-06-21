@@ -1,0 +1,266 @@
+// Simulierte Bücherdaten (ersetze dies später mit einer Datenbankintegration)
+let books = [
+    {
+        id: 1,
+        title: "Der Alchimist",
+        author: "Paulo Coelho",
+        genre: "Roman",
+        description: "Ein junger Hirte folgt seinem Traum von einem verborgenen Schatz und entdeckt seine persönliche Legende.",
+        status: "verfügbar",
+        borrower: null
+    },
+    {
+        id: 2,
+        title: "Harry Potter und der Stein der Weisen",
+        author: "J.K. Rowling",
+        genre: "Fantasy",
+        description: "Ein Junge erfährt, dass er ein Zauberer ist und beginnt seine Ausbildung in der Zauberschule Hogwarts.",
+        status: "ausgeliehen",
+        borrower: "Fritz"
+    }
+];
+
+// Variable zur Speicherung der aktuellen Benutzerdaten (simuliert)
+let currentUser = {
+    name: "Max Mustermann",
+    borrowedBooks: [2] // IDs der ausgeliehenen Bücher
+};
+
+// Funktion zum Laden der Startseite
+function loadHomePage() {
+    const mainContent = document.getElementById('main-content');
+    let booksHTML = '<h2>Neue hinzugefügte Bücher</h2>';
+    booksHTML += '<div class="book-list">';
+    let recentBooks = books.slice(-3).reverse(); // Nur die letzten 3 Bücher anzeigen
+    recentBooks.forEach(book => {
+        booksHTML += `
+            <div class="book">
+                <h3>${book.title}</h3>
+                <p><strong>Autor:</strong> ${book.author}</p>
+                <p><strong>Genre:</strong> ${book.genre}</p>
+                <p><strong>Beschreibung:</strong> ${book.description}</p>
+                <p><strong>Status:</strong> ${book.status}</p>
+                ${book.status === 'ausgeliehen' ? `<p><strong>Ausgeliehen von:</strong> ${book.borrower}</p>` : ''}
+                <p><strong>Buchnummer:</strong> ${book.id}</p>
+                ${book.status === 'verfügbar' ? `<button class="borrow-btn" data-book-id="${book.id}">Buch ausleihen</button>` : ''}
+            </div>
+        `;
+    });
+    booksHTML += '</div>';
+    mainContent.innerHTML = booksHTML;
+
+    // Event Listener für Ausleihe-Buttons
+    const borrowButtons = document.querySelectorAll('.borrow-btn');
+    borrowButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            const bookId = button.getAttribute('data-book-id');
+            handleBorrowRequest(parseInt(bookId));
+        });
+    });
+}
+
+// Funktion zum Laden der Suchseite
+function loadSearchPage() {
+    const mainContent = document.getElementById('main-content');
+    mainContent.innerHTML = `
+        <h2>Büchersuche</h2>
+        <form id="search-form">
+            <input type="text" id="search-input" placeholder="Suche nach Titel, Autor, Genre oder Buchnummer">
+            <button type="submit">Suchen</button>
+        </form>
+        <div class="search-results">
+            <!-- Hier werden Suchergebnisse dynamisch eingefügt -->
+        </div>
+    `;
+    // Event Listener für Suchformular
+    const searchForm = document.getElementById('search-form');
+    searchForm.addEventListener('submit', function(event) {
+        event.preventDefault();
+        const searchQuery = document.getElementById('search-input').value.toLowerCase();
+        handleSearch(searchQuery);
+    });
+}
+
+// Funktion zum Laden der Profilseite
+function loadProfilePage() {
+    const mainContent = document.getElementById('main-content');
+    if (currentUser.borrowedBooks.length === 0) {
+        mainContent.innerHTML = `
+            <h2>Mein Profil (${currentUser.name})</h2>
+            <h3>Ausgeliehene Bücher</h3>
+            <p>Keine Bücher ausgeliehen.</p>
+        `;
+    } else {
+        mainContent.innerHTML = `
+            <h2>Mein Profil (${currentUser.name})</h2>
+            <h3>Ausgeliehene Bücher</h3>
+            <div id="borrowed-books">
+                <!-- Hier werden ausgeliehene Bücher dynamisch eingefügt -->
+            </div>
+        `;
+        loadBorrowedBooks(); // Lade die ausgeliehenen Bücher
+    }
+}
+
+// Funktion zum Laden der ausgeliehenen Bücher des aktuellen Benutzers
+function loadBorrowedBooks() {
+    const borrowedBooksContainer = document.getElementById('borrowed-books');
+    const borrowedBooksHTML = currentUser.borrowedBooks.map(bookId => {
+        const book = books.find(b => b.id === bookId);
+        return `
+            <div class="borrowed-book">
+                <h3>${book.title}</h3>
+                <p><strong>Autor:</strong> ${book.author}</p>
+                <p><strong>Genre:</strong> ${book.genre}</p>
+                <p><strong>Beschreibung:</strong> ${book.description}</p>
+                <p><strong>Ausgeliehen von:</strong> ${book.borrower}</p>
+                <p><strong>Buchnummer:</strong> ${book.id}</p>
+                <button class="return-btn" data-book-id="${book.id}">Buch zurückgeben</button>
+            </div>
+        `;
+    }).join('');
+
+    borrowedBooksContainer.innerHTML = borrowedBooksHTML;
+
+    // Event Listener für Rückgabe-Buttons
+    const returnButtons = document.querySelectorAll('.return-btn');
+    returnButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            const bookId = button.getAttribute('data-book-id');
+            handleReturnBook(parseInt(bookId));
+        });
+    });
+}
+
+// Funktion zur Verarbeitung der Rückgabe eines Buches
+function handleReturnBook(bookId) {
+    const book = books.find(book => book.id === bookId);
+    if (book) {
+        book.status = 'verfügbar';
+        book.borrower = null;
+        currentUser.borrowedBooks = currentUser.borrowedBooks.filter(id => id !== bookId);
+        alert(`Das Buch "${book.title}" wurde erfolgreich zurückgegeben.`);
+        loadProfilePage(); // Seite aktualisieren
+    } else {
+        alert(`Das Buch mit der ID ${bookId} wurde nicht gefunden.`);
+    }
+}
+
+// Funktion zur Verarbeitung der Ausleihe-Anfrage
+function handleBorrowRequest(bookId) {
+    const book = books.find(book => book.id === bookId);
+    if (book) {
+        if (book.status === 'verfügbar') {
+            book.status = 'ausgeliehen';
+            book.borrower = currentUser.name; // Hier wird der aktuelle Benutzer als Ausleiher eingetragen
+            currentUser.borrowedBooks.push(book.id);
+            alert(`Das Buch "${book.title}" wurde erfolgreich ausgeliehen.`);
+            loadHomePage(); // Seite aktualisieren
+        } else {
+            alert(`Das Buch "${book.title}" ist bereits ausgeliehen und kann nicht erneut ausgeliehen werden.`);
+        }
+    } else {
+        alert(`Das Buch mit der ID ${bookId} wurde nicht gefunden.`);
+    }
+}
+
+// Funktion zur Verarbeitung der Suche
+function handleSearch(query) {
+    const searchResults = books.filter(book =>
+        book.title.toLowerCase().includes(query) ||
+        book.author.toLowerCase().includes(query) ||
+        book.genre.toLowerCase().includes(query) ||
+        book.id.toString() === query  // Nach Buchnummer suchen
+    );
+
+    const searchResultsHTML = '<div class="search-results">' +
+        searchResults.map(book => `
+            <div class="book">
+                <h3>${book.title}</h3>
+                <p><strong>Autor:</strong> ${book.author}</p>
+                <p><strong>Genre:</strong> ${book.genre}</p>
+                <p><strong>Beschreibung:</strong> ${book.description}</p>
+                <p><strong>Status:</strong> ${book.status}</p>
+                ${book.status === 'ausgeliehen' ? `<p><strong>Ausgeliehen von:</strong> ${book.borrower}</p>` : ''}
+                <p><strong>Buchnummer:</strong> ${book.id}</p>
+                ${book.status === 'verfügbar' ? `<button class="borrow-btn" data-book-id="${book.id}">Buch ausleihen</button>` : ''}
+            </div>
+        `).join('') +
+    '</div>';
+
+    const mainContent = document.getElementById('main-content');
+    mainContent.innerHTML = searchResultsHTML;
+
+    // Event Listener für Ausleihe-Buttons in den Suchergebnissen
+    const borrowButtons = document.querySelectorAll('.borrow-btn');
+    borrowButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            const bookId = button.getAttribute('data-book-id');
+            handleBorrowRequest(parseInt(bookId));
+        });
+    });
+}
+
+// Funktion zum Laden der Seite zur Registrierung neuer Bücher
+function loadRegisterBookPage() {
+    const mainContent = document.getElementById('main-content');
+    mainContent.innerHTML = `
+        <h2>Buch registrieren</h2>
+        <form id="register-book-form">
+            <label for="title">Titel:</label>
+            <input type="text" id="title" required><br><br>
+            <label for="author">Autor:</label>
+            <input type="text" id="author" required><br><br>
+            <label for="genre">Genre:</label>
+            <input type="text" id="genre" required><br><br>
+            <label for="description">Beschreibung:</label><br>
+            <textarea id="description" rows="4" cols="50"></textarea><br><br>
+            <label for="condition">Zustand:</label>
+            <select id="condition">
+                <option value="neu">Neu</option>
+                <option value="gebraucht">Gebraucht</option>
+            </select><br><br>
+            <button type="submit">Buch registrieren</button>
+        </form>
+    `;
+
+    const registerBookForm = document.getElementById('register-book-form');
+    registerBookForm.addEventListener('submit', function(event) {
+        event.preventDefault();
+        const title = document.getElementById('title').value;
+        const author = document.getElementById('author').value;
+        const genre = document.getElementById('genre').value;
+        const description = document.getElementById('description').value;
+        const condition = document.getElementById('condition').value;
+
+        registerBook(title, author, genre, description, condition);
+    });
+}
+
+// Funktion zum Registrieren eines neuen Buchs
+function registerBook(title, author, genre, description, condition) {
+    const newBookId = books.length + 1; // Neue Buch-ID als nächste fortlaufende Nummer
+    const newBook = {
+        id: newBookId,
+        title: title,
+        author: author,
+        genre: genre,
+        description: description,
+        status: 'verfügbar',
+        borrower: null,
+        condition: condition
+    };
+
+    books.push(newBook);
+    alert(`Das Buch "${title}" wurde erfolgreich zur Bibliothek hinzugefügt.`);
+    loadHomePage(); // Lade die Startseite, um das neue Buch anzuzeigen
+}
+
+// Event Listener für Navigationslinks
+document.getElementById('home-link').addEventListener('click', loadHomePage);
+document.getElementById('search-link').addEventListener('click', loadSearchPage);
+document.getElementById('profile-link').addEventListener('click', loadProfilePage);
+document.getElementById('register-link').addEventListener('click', loadRegisterBookPage);
+
+// Standard: Lade die Startseite beim ersten Laden der App
+loadHomePage();
