@@ -1,0 +1,134 @@
+/* Globale Stile */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f0f5f9; /* Hellblau */
+    color: #333333; /* Dunkelgrau für Text */
+    margin: 0;
+}
+
+header {
+    background-color: #3b7dd8; /* Mittelblau */
+    color: #ffffff; /* Weiß für Text */
+    padding: 20px 0;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+nav {
+    background-color: #205493; /* Dunkelblau */
+    padding: 10px 0;
+}
+
+nav ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    text-align: center;
+}
+
+nav ul li {
+    display: inline-block;
+    margin-right: 20px;
+}
+
+nav ul li a {
+    color: #ffffff; /* Weiß für Links */
+    text-decoration: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+nav ul li a:hover {
+    background-color: #ffffff; /* Weiß bei Hover */
+    color: #3b7dd8; /* Mittelblau bei Hover */
+}
+
+#main-content {
+    padding: 20px;
+    margin: 20px;
+    border: 1px solid #cccccc; /* Hellgrau */
+    border-radius: 5px;
+    background-color: #ffffff; /* Weiß für Hintergrund */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Leichte Schatten */
+}
+
+/* Stile für die Startseite mit Hintergrundbild */
+.home-page {
+    background-image: url('https://media.istockphoto.com/id/157482029/de/foto/stapel-b%C3%BCcher.jpg?s=612x612&w=0&k=20&c=DPuFkbjVSfidU-wiw0stFKsidHA-LlzKg6j5j1ZAGBE=');
+    background-size: cover;
+    background-position: center;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Stile für das Buch registrieren Formular */
+#register-book-form {
+    background-color: #f2f4f9; /* Hellgrau */
+    padding: 30px;
+    margin-top: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Weicher Schatten */
+}
+
+#register-book-form label {
+    font-weight: bold;
+    display: block;
+    margin-bottom: 8px;
+}
+
+#register-book-form input[type="text"],
+#register-book-form textarea,
+#register-book-form select {
+    width: calc(100% - 20px);
+    padding: 12px;
+    margin-bottom: 20px;
+    border: 1px solid #dddddd;
+    border-radius: 5px;
+    font-size: 16px;
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+#register-book-form input[type="text"]:focus,
+#register-book-form textarea:focus,
+#register-book-form select:focus {
+    outline: none;
+    border-color: #3b7dd8; /* Mittelblau bei Fokus */
+    box-shadow: 0 0 8px rgba(59, 125, 216, 0.4); /* Weicher Schatten bei Fokus */
+}
+
+#register-book-form textarea {
+    resize: vertical; /* Vertikales Resize für Textarea */
+}
+
+#register-book-form button[type="submit"] {
+    background-color: #3b7dd8; /* Mittelblau */
+    color: #ffffff; /* Weiß für Text im Button */
+    border: none;
+    padding: 12px 24px;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 16px;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+#register-book-form button[type="submit"]:hover {
+    background-color: #205493; /* Dunkelblau bei Hover */
+}
+
+/* Media Query für kleinere Bildschirme */
+@media (max-width: 768px) {
+    nav ul li {
+        display: block;
+        margin: 10px 0;
+    }
+
+    #register-book-form input[type="text"],
+    #register-book-form textarea,
+    #register-book-form select {
+        width: 100%;
+    }
+}
